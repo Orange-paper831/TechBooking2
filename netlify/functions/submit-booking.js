@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: 'stfxavieravcrew@gmail.com',
-        pass: 'uxabwawithpgxnaq' // <-- Your App Password here
+        pass: process.env.GMAIL_APP_PASSWORD // Correct way to use the password
     }
 });
 
@@ -60,9 +60,9 @@ router.post('/submit-booking', async (req, res) => {
         <hr>
         <p>Please take an action on this request:</p>
         <div style="margin-top: 20px;">
-            <a href="https://profound-griffin-f80b26.netlify.app/.netlify/functions/submit-booking/action?id=${bookingId}&action=accept" style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;">Accept</a>
-            <a href="https://profound-griffin-f80b26.netlify.app/.netlify/functions/submit-booking/action?id=${bookingId}&action=deny" style="background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;">Deny</a>
-            <a href="https://profound-griffin-f80b26.netlify.app/.netlify/functions/submit-booking/action?id=${bookingId}&action=reschedule" style="background-color: #ffc107; color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reschedule</a>
+            <a href="https://stfxtechcrew.netlify.app/.netlify/functions/submit-booking/action?id=${bookingId}&action=accept" style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;">Accept</a>
+            <a href="https://stfxtechcrew.netlify.app/.netlify/functions/submit-booking/action?id=${bookingId}&action=deny" style="background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;">Deny</a>
+            <a href="https://stfxtechcrew.netlify.app/.netlify/functions/submit-booking/action?id=${bookingId}&action=reschedule" style="background-color: #ffc107; color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reschedule</a>
         </div>
     `;
 

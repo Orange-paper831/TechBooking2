@@ -478,7 +478,6 @@
             const formData = new FormData(this);
             const data = Object.fromEntries(formData.entries());
 
-            // Get selected equipment and format it
             const selectedEquipment = [];
             if (document.getElementById('projector').checked) {
                 selectedEquipment.push('Projector');
@@ -497,7 +496,6 @@
             }
             data.equipmentSummary = selectedEquipment.join(', ') || 'None selected';
 
-            // Get lighting options if applicable
             if (data.location === 'Theatre') {
                 const lightingOption = document.getElementById('lighting-select').value;
                 data.lightingOption = lightingOption;
@@ -511,13 +509,13 @@
                 }
             }
             
-            fetch('https://stfxtechcrew.netlify.app/.netlify/functions/submit-booking', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data)
-})  
+            fetch('/.netlify/functions/submit-booking', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
