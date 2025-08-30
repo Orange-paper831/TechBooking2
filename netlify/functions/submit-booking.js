@@ -10,7 +10,7 @@ const router = express.Router();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// Set up Nodemailer transporter with your Gmail details
+// Set up Nodemailer transporter with secure environment variable
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -19,18 +19,10 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// A simple in-memory store for booking requests
-let bookingRequests = {};
-
 // Handle form submission
 router.post('/submit-booking', async (req, res) => {
     const formData = req.body;
-    const bookingId = Date.now().toString();
-
-    bookingRequests[bookingId] = {
-        ...formData,
-        status: 'pending'
-    };
+    const dataString = encodeURIComponent(JSON.stringify(formData));
 
     const emailHtmlToCrew = `
         <h1>New Tech Crew Booking Request</h1>
@@ -60,9 +52,9 @@ router.post('/submit-booking', async (req, res) => {
         <hr>
         <p>Please take an action on this request:</p>
         <div style="margin-top: 20px;">
-            <a href="https://stfxtechcrew.netlify.app/.netlify/functions/submit-booking/action?id=${bookingId}&action=accept" style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;">Accept</a>
-            <a href="https://stfxtechcrew.netlify.app/.netlify/functions/submit-booking/action?id=${bookingId}&action=deny" style="background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;">Deny</a>
-            <a href="https://stfxtechcrew.netlify.app/.netlify/functions/submit-booking/action?id=${bookingId}&action=reschedule" style="background-color: #ffc107; color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reschedule</a>
+            <a href="https://stfxtechcrew.netlify.app/.netlify/functions/submit-booking/action?action=accept&data=${dataString}" style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;">Accept</a>
+            <a href="https://stfxtechcrew.netlify.app/.netlify/functions/submit-booking/action?action=deny&data=${dataString}" style="background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;">Deny</a>
+            <a href="https://stfxtechcrew.netlify.app/.netlify/functions/submit-booking/action?action=reschedule&data=${dataString}" style="background-color: #ffc107; color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reschedule</a>
         </div>
     `;
 
@@ -84,18 +76,16 @@ router.post('/submit-booking', async (req, res) => {
 
 // Handle the button clicks from the email
 router.get('/action', async (req, res) => {
-    const { id, action } = req.query;
+    const { action, data } = req.query;
 
-    if (!bookingRequests[id]) {
-        return res.status(404).send('Booking request not found.');
+    if (!data) {
+        return res.status(400).send('Booking data not found.');
     }
 
-    const booking = bookingRequests[id];
+    const booking = JSON.parse(decodeURIComponent(data));
     const teacherEmail = booking.email;
     let emailSubject = '';
     let emailHtmlToTeacher = '';
-
-    booking.status = action;
 
     let responseMessage;
     switch (action) {
