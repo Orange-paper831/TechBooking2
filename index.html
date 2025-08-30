@@ -511,13 +511,13 @@
                 }
             }
             
-            fetch('/.netlify/functions/submit-booking', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
+            fetch('https://stfxtechcrew.netlify.app/.netlify/functions/submit-booking', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+})  
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
