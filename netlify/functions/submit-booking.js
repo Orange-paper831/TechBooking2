@@ -9,6 +9,16 @@ exports.handler = async (event) => {
   try {
     const formData = JSON.parse(event.body);
 
+    // Ensure light colors array exists (from Theatre colour pickers)
+    formData.lightColors = [];
+    if (formData.lightingColours) {
+      for (const key in formData.lightingColours) {
+        if (formData.lightingColours[key]) {
+          formData.lightColors.push(formData.lightingColours[key]);
+        }
+      }
+    }
+
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -30,7 +40,7 @@ exports.handler = async (event) => {
       location: formData.location,
       equipmentSummary: formData.equipmentSummary || "",
       notes: formData.notes || "",
-      lightColors: JSON.stringify(formData.lightColors || [])
+      lightColors: JSON.stringify(formData.lightColors || []),
     });
 
     const acceptLink     = `${baseUrl}/.netlify/functions/booking-action?action=accept&${qsCommon}`;
