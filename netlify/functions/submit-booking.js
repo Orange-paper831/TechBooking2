@@ -19,6 +19,7 @@ exports.handler = async (event) => {
 
     const baseUrl = process.env.URL || "https://stfxtechcrew.netlify.app";
 
+    // Build querystring for action buttons
     const qsCommon = querystring.stringify({
       email: encodeURIComponent(formData.email),
       teacherName: formData.teacherName,
@@ -28,7 +29,8 @@ exports.handler = async (event) => {
       endTime: formData.endTime,
       location: formData.location,
       equipmentSummary: formData.equipmentSummary || "",
-      notes: formData.notes || ""
+      notes: formData.notes || "",
+      lightColors: JSON.stringify(formData.lightColors || [])
     });
 
     const acceptLink     = `${baseUrl}/.netlify/functions/booking-action?action=accept&${qsCommon}`;
@@ -46,6 +48,22 @@ exports.handler = async (event) => {
       border-radius:6px;
     `;
 
+    // 🎨 Generate light color previews
+    let lightColorsHTML = "None";
+    if (formData.lightColors && formData.lightColors.length > 0) {
+      lightColorsHTML = formData.lightColors
+        .map(color => {
+          const hex = color.trim();
+          return `
+            <div style="display:flex;align-items:center;margin-bottom:4px;">
+              <div style="width:20px;height:20px;background:${hex};border:1px solid #000;margin-right:8px;"></div>
+              <span>${hex}</span>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
     const html = `
       <h1>New Booking Request</h1>
       <p><b>Teacher:</b> ${formData.teacherName}</p>
@@ -56,6 +74,8 @@ exports.handler = async (event) => {
       <p><b>Location:</b> ${formData.location}</p>
       <p><b>Equipment:</b> ${formData.equipmentSummary || "None"}</p>
       <p><b>Notes:</b> ${formData.notes || "None"}</p>
+      <p><b>Light Colours:</b></p>
+      <div>${lightColorsHTML}</div>
       <hr>
       <h3>Take Action:</h3>
       <p>
